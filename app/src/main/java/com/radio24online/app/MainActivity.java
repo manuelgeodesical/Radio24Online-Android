@@ -35,7 +35,6 @@ public class MainActivity extends Activity {
     private TextView status;
     private TextView songTitle;
     private TextView artistName;
-    private TextView listenerInfo;
     private ImageView artwork;
     private TextView playCircle;
     private Button playButton;
@@ -64,25 +63,25 @@ public class MainActivity extends Activity {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setGravity(Gravity.CENTER_HORIZONTAL);
-        root.setPadding(dp(24), dp(34), dp(24), dp(30));
+        root.setPadding(dp(24), dp(28), dp(24), dp(30));
         root.setBackgroundColor(Color.rgb(8, 12, 19));
         scroll.addView(root, new ScrollView.LayoutParams(-1, -2));
 
-        TextView brand = new TextView(this);
-        brand.setText("RADIO24ONLINE");
-        brand.setTextColor(Color.WHITE);
-        brand.setTextSize(28);
-        brand.setGravity(Gravity.CENTER);
-        brand.setTypeface(null, 1);
-        root.addView(brand, new LinearLayout.LayoutParams(-1, -2));
+        ImageView brand = new ImageView(this);
+        brand.setImageResource(R.drawable.logo_radio24_official);
+        brand.setAdjustViewBounds(true);
+        brand.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        LinearLayout.LayoutParams brandLp = new LinearLayout.LayoutParams(-1, dp(190));
+        root.addView(brand, brandLp);
 
         TextView tagline = new TextView(this);
-        tagline.setText("Una Radio para ti, Siempre Contigo desde 2013");
-        tagline.setTextColor(Color.rgb(167, 179, 196));
-        tagline.setTextSize(15);
+        tagline.setText("Siempre contigo");
+        tagline.setTextColor(Color.rgb(190, 200, 214));
+        tagline.setTextSize(19);
         tagline.setGravity(Gravity.CENTER);
+        tagline.setTypeface(null, 1);
         LinearLayout.LayoutParams tagLp = new LinearLayout.LayoutParams(-1, -2);
-        tagLp.topMargin = dp(8);
+        tagLp.topMargin = dp(2);
         root.addView(tagline, tagLp);
 
         status = new TextView(this);
@@ -92,16 +91,16 @@ public class MainActivity extends Activity {
         status.setGravity(Gravity.CENTER);
         status.setTypeface(null, 1);
         LinearLayout.LayoutParams statusLp = new LinearLayout.LayoutParams(-1, -2);
-        statusLp.topMargin = dp(22);
+        statusLp.topMargin = dp(20);
         root.addView(status, statusLp);
 
         artwork = new ImageView(this);
-        artwork.setImageResource(R.drawable.ic_radio_icon);
-        artwork.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        artwork.setPadding(dp(26), dp(26), dp(26), dp(26));
+        artwork.setImageResource(R.drawable.logo_radio24_official);
+        artwork.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        artwork.setPadding(dp(20), dp(20), dp(20), dp(20));
         artwork.setBackgroundResource(R.drawable.button_secondary);
         LinearLayout.LayoutParams artLp = new LinearLayout.LayoutParams(dp(220), dp(220));
-        artLp.topMargin = dp(20);
+        artLp.topMargin = dp(18);
         root.addView(artwork, artLp);
 
         TextView now = new TextView(this);
@@ -111,7 +110,7 @@ public class MainActivity extends Activity {
         now.setTypeface(null, 1);
         now.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams nowLp = new LinearLayout.LayoutParams(-1, -2);
-        nowLp.topMargin = dp(20);
+        nowLp.topMargin = dp(18);
         root.addView(now, nowLp);
 
         songTitle = new TextView(this);
@@ -132,15 +131,6 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams artistLp = new LinearLayout.LayoutParams(-1, -2);
         artistLp.topMargin = dp(4);
         root.addView(artistName, artistLp);
-
-        listenerInfo = new TextView(this);
-        listenerInfo.setText("Radio online");
-        listenerInfo.setTextColor(Color.rgb(112, 124, 142));
-        listenerInfo.setTextSize(12);
-        listenerInfo.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams listLp = new LinearLayout.LayoutParams(-1, -2);
-        listLp.topMargin = dp(5);
-        root.addView(listenerInfo, listLp);
 
         playCircle = new TextView(this);
         playCircle.setText("▶");
@@ -187,7 +177,7 @@ public class MainActivity extends Activity {
         web.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://radio24online.com/"))));
 
         TextView footer = new TextView(this);
-        footer.setText("Radio24Online · Android v1.1\n© Geodesical Technology");
+        footer.setText("Radio24Online · Android v1.1.1\n© Geodesical Technology");
         footer.setTextColor(Color.rgb(92, 104, 122));
         footer.setGravity(Gravity.CENTER);
         footer.setTextSize(12);
@@ -206,8 +196,7 @@ public class MainActivity extends Activity {
             updateMetadata(
                     intent.getStringExtra("title"),
                     intent.getStringExtra("artist"),
-                    intent.getStringExtra("song"),
-                    intent.getIntExtra("listeners", -1));
+                    intent.getStringExtra("song"));
         }
 
         if (intent.hasExtra("sleepMinutes") || "sleep_set".equals(state)) {
@@ -239,7 +228,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void updateMetadata(String raw, String artist, String song, int listeners) {
+    private void updateMetadata(String raw, String artist, String song) {
         String safeRaw = raw == null ? "" : raw.trim();
         String safeArtist = artist == null ? "" : artist.trim();
         String safeSong = song == null ? "" : song.trim();
@@ -251,12 +240,6 @@ public class MainActivity extends Activity {
         if (!safeArtist.isEmpty()) artistName.setText(safeArtist);
         else artistName.setText("Emisión en directo");
 
-        if (listeners >= 0) {
-            listenerInfo.setText(listeners == 1 ? "1 oyente conectado" : listeners + " oyentes conectados");
-        } else {
-            listenerInfo.setText("Radio online");
-        }
-
         if (!safeArtist.isEmpty() && !safeSong.isEmpty()) loadArtwork(safeArtist, safeSong);
     }
 
@@ -264,7 +247,9 @@ public class MainActivity extends Activity {
         final String query = (artist + " " + song).trim();
         if (query.isEmpty() || query.equals(lastArtworkQuery)) return;
         lastArtworkQuery = query;
-        artwork.setImageResource(R.drawable.ic_radio_icon);
+        artwork.setImageResource(R.drawable.logo_radio24_official);
+        artwork.setPadding(dp(20), dp(20), dp(20), dp(20));
+        artwork.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
         new Thread(() -> {
             HttpURLConnection c = null;
@@ -274,7 +259,7 @@ public class MainActivity extends Activity {
                 c = (HttpURLConnection) api.openConnection();
                 c.setConnectTimeout(5000);
                 c.setReadTimeout(5000);
-                c.setRequestProperty("User-Agent", "Radio24Online-Android/1.1");
+                c.setRequestProperty("User-Agent", "Radio24Online-Android/1.1.1");
 
                 BufferedReader r = new BufferedReader(new InputStreamReader(c.getInputStream()));
                 StringBuilder json = new StringBuilder();
@@ -297,6 +282,7 @@ public class MainActivity extends Activity {
                 if (bitmap != null) runOnUiThread(() -> {
                     if (query.equals(lastArtworkQuery)) {
                         artwork.setPadding(0, 0, 0, 0);
+                        artwork.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         artwork.setImageBitmap(bitmap);
                     }
                 });
@@ -345,8 +331,7 @@ public class MainActivity extends Activity {
         updateMetadata(
                 RadioService.getCurrentTitle(),
                 RadioService.getCurrentArtist(),
-                RadioService.getCurrentSong(),
-                RadioService.getCurrentListeners());
+                RadioService.getCurrentSong());
         updateSleepLabel(RadioService.getSleepMinutesRemaining());
     }
 

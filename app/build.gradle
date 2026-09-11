@@ -10,13 +10,14 @@ android {
         applicationId 'com.radio24online.app'
         minSdk 23
         targetSdk 35
-        versionCode 3
-        versionName '1.1.0'
+        versionCode 4
+        versionName '1.1.1'
     }
 
     buildTypes {
         release {
             minifyEnabled false
+            crunchPngs false
             signingConfig signingConfigs.debug
         }
     }
