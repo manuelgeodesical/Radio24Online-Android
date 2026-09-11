@@ -9,8 +9,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_radio_icon"
-        android:roundIcon="@drawable/ic_radio_icon"
+        android:icon="@drawable/logo_radio24_official"
+        android:roundIcon="@drawable/logo_radio24_official"
         android:label="Radio24Online"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
